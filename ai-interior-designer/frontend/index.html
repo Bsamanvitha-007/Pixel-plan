@@ -1,0 +1,1098 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pixel&Plan — Intelligent Interior Design Assistant</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #F5F0E8;
+    --warm-white: #FAF8F4;
+    --charcoal: #1C1C1C;
+    --brown: #8B6F52;
+    --gold: #C9A96E;
+    --sage: #7A8C72;
+    --terracotta: #C4754A;
+    --light-sage: #E8EDE4;
+    --muted: #9B9189;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--charcoal);
+    overflow-x: hidden;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; width: 100%; z-index: 100;
+    padding: 1.4rem 4rem;
+    display: flex; justify-content: space-between; align-items: center;
+    backdrop-filter: blur(20px);
+    background: rgba(245,240,232,0.85);
+    border-bottom: 1px solid rgba(139,111,82,0.12);
+  }
+  .nav-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.5rem; font-weight: 700;
+    color: var(--charcoal);
+    letter-spacing: -0.5px;
+  }
+  .nav-logo span { color: var(--terracotta); }
+  .nav-links { display: flex; gap: 2.5rem; align-items: center; }
+  .nav-links a {
+    text-decoration: none; color: var(--charcoal);
+    font-size: 0.9rem; font-weight: 400; letter-spacing: 0.3px;
+    opacity: 0.7; transition: opacity 0.2s;
+  }
+  .nav-links a:hover { opacity: 1; }
+  .nav-cta {
+    background: var(--charcoal) !important; color: var(--cream) !important;
+    padding: 0.6rem 1.4rem; border-radius: 40px;
+    opacity: 1 !important; font-weight: 500 !important;
+    transition: background 0.2s !important;
+  }
+  .nav-cta:hover { background: var(--terracotta) !important; }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    display: grid; grid-template-columns: 1fr 1fr;
+    align-items: center;
+    padding: 7rem 4rem 4rem;
+    gap: 4rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute; top: -20%; right: -10%;
+    width: 70vw; height: 70vw;
+    background: radial-gradient(circle, rgba(201,169,110,0.15) 0%, transparent 65%);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  .hero-label {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    background: var(--light-sage); color: var(--sage);
+    padding: 0.35rem 1rem; border-radius: 40px;
+    font-size: 0.78rem; font-weight: 500; letter-spacing: 0.8px;
+    text-transform: uppercase; margin-bottom: 1.5rem;
+  }
+  .hero-label::before { content: '●'; font-size: 0.5rem; animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+  .hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.8rem, 5vw, 4.2rem);
+    line-height: 1.1;
+    font-weight: 900;
+    letter-spacing: -1.5px;
+    margin-bottom: 1.5rem;
+  }
+  .hero h1 em {
+    font-style: italic; color: var(--terracotta);
+  }
+  .hero p {
+    font-size: 1.1rem; color: var(--muted);
+    line-height: 1.7; max-width: 480px;
+    margin-bottom: 2.5rem; font-weight: 300;
+  }
+  .hero-btns { display: flex; gap: 1rem; align-items: center; }
+  .btn-primary {
+    background: var(--charcoal); color: var(--cream);
+    padding: 0.9rem 2rem; border-radius: 50px;
+    text-decoration: none; font-weight: 500;
+    font-size: 0.95rem; transition: all 0.25s;
+    display: inline-flex; align-items: center; gap: 0.5rem;
+  }
+  .btn-primary:hover { background: var(--terracotta); transform: translateY(-2px); }
+  .btn-secondary {
+    color: var(--charcoal); font-weight: 500; font-size: 0.95rem;
+    text-decoration: none; display: inline-flex; align-items: center; gap: 0.4rem;
+    opacity: 0.7; transition: opacity 0.2s;
+  }
+  .btn-secondary:hover { opacity: 1; }
+
+  .hero-stats {
+    display: flex; gap: 2.5rem; margin-top: 3rem;
+    padding-top: 2rem; border-top: 1px solid rgba(139,111,82,0.2);
+  }
+  .stat-item { display: flex; flex-direction: column; }
+  .stat-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem; font-weight: 700; color: var(--charcoal);
+  }
+  .stat-label { font-size: 0.8rem; color: var(--muted); margin-top: 0.2rem; }
+
+  /* Hero Visual */
+  .hero-visual {
+    position: relative; height: 580px;
+  }
+  .room-card {
+    position: absolute; border-radius: 20px; overflow: hidden;
+    box-shadow: 0 20px 60px rgba(28,28,28,0.18);
+  }
+  .room-card-main {
+    width: 100%; height: 420px;
+    background: linear-gradient(135deg, #D4C4B0 0%, #A89880 50%, #7A6855 100%);
+    display: flex; align-items: center; justify-content: center;
+    position: relative; overflow: hidden;
+  }
+  .room-card-main::before {
+    content: '';
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse at 30% 40%, rgba(255,255,255,0.3) 0%, transparent 50%),
+      radial-gradient(ellipse at 70% 60%, rgba(139,111,82,0.4) 0%, transparent 50%);
+  }
+  .room-illustration {
+    width: 90%; height: 85%;
+    position: relative; z-index: 1;
+  }
+  /* Floating tags */
+  .float-tag {
+    position: absolute; z-index: 10;
+    background: white; border-radius: 12px;
+    padding: 0.6rem 1rem; box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+    font-size: 0.78rem; display: flex; align-items: center; gap: 0.5rem;
+  }
+  .float-tag-style { top: 20px; right: -20px; }
+  .float-tag-budget { bottom: 80px; left: -20px; }
+  .float-tag-ai { bottom: 20px; right: 20px; }
+  .tag-dot { width: 8px; height: 8px; border-radius: 50%; }
+  .tag-dot.gold { background: var(--gold); }
+  .tag-dot.sage { background: var(--sage); }
+  .tag-dot.terra { background: var(--terracotta); }
+
+  /* Small card */
+  .mini-card {
+    position: absolute; bottom: -30px; left: -40px;
+    background: var(--charcoal); color: var(--cream);
+    border-radius: 16px; padding: 1.2rem 1.5rem;
+    width: 200px;
+  }
+  .mini-card-title { font-size: 0.75rem; opacity: 0.5; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.5px; }
+  .mini-card-styles { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-top: 0.6rem; }
+  .style-pill {
+    background: rgba(255,255,255,0.12); border-radius: 20px;
+    padding: 0.25rem 0.6rem; font-size: 0.7rem;
+  }
+  .style-pill.active { background: var(--gold); color: var(--charcoal); font-weight: 500; }
+
+  /* ── UPLOAD SECTION ── */
+  .section { padding: 5rem 4rem; }
+  .section-label {
+    font-size: 0.78rem; text-transform: uppercase; letter-spacing: 1.5px;
+    color: var(--terracotta); font-weight: 500; margin-bottom: 1rem;
+  }
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 3.5vw, 3rem);
+    font-weight: 700; letter-spacing: -1px;
+    line-height: 1.2; margin-bottom: 1rem;
+  }
+  .section-sub {
+    color: var(--muted); font-size: 1rem; max-width: 500px;
+    line-height: 1.7; font-weight: 300;
+  }
+
+  /* Upload Demo */
+  .demo-wrapper {
+    display: grid; grid-template-columns: 1fr 1.2fr;
+    gap: 3rem; align-items: start; margin-top: 4rem;
+  }
+  .upload-box {
+    border: 2px dashed rgba(139,111,82,0.3);
+    border-radius: 20px; padding: 3rem 2rem;
+    text-align: center; cursor: pointer;
+    transition: all 0.3s; background: var(--warm-white);
+    position: relative; overflow: hidden;
+  }
+  .upload-box:hover {
+    border-color: var(--gold);
+    background: rgba(201,169,110,0.05);
+    transform: translateY(-3px);
+    box-shadow: 0 12px 40px rgba(201,169,110,0.15);
+  }
+  .upload-icon {
+    width: 60px; height: 60px; border-radius: 16px;
+    background: linear-gradient(135deg, var(--gold), var(--brown));
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 1.2rem; font-size: 1.5rem;
+  }
+  .upload-box h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.2rem; margin-bottom: 0.5rem;
+  }
+  .upload-box p { color: var(--muted); font-size: 0.88rem; }
+  .upload-formats {
+    display: flex; gap: 0.5rem; justify-content: center; margin-top: 1.2rem;
+  }
+  .fmt-tag {
+    background: var(--light-sage); color: var(--sage);
+    padding: 0.2rem 0.6rem; border-radius: 6px;
+    font-size: 0.72rem; font-weight: 500;
+  }
+
+  /* Style Selector */
+  .style-selector { }
+  .style-selector h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem; margin-bottom: 1.2rem;
+  }
+  .styles-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .style-card {
+    border-radius: 16px; padding: 1.2rem;
+    cursor: pointer; transition: all 0.25s;
+    border: 2px solid transparent; position: relative; overflow: hidden;
+  }
+  .style-card:hover { transform: translateY(-3px); }
+  .style-card.selected { border-color: var(--charcoal); }
+  .style-card-swatch {
+    height: 80px; border-radius: 10px; margin-bottom: 0.8rem;
+    position: relative; overflow: hidden;
+  }
+  .style-card h4 { font-size: 0.9rem; font-weight: 500; margin-bottom: 0.2rem; }
+  .style-card p { font-size: 0.75rem; color: var(--muted); }
+  .style-check {
+    position: absolute; top: 10px; right: 10px;
+    width: 22px; height: 22px; border-radius: 50%;
+    background: var(--charcoal); color: var(--cream);
+    display: none; align-items: center; justify-content: center;
+    font-size: 0.7rem;
+  }
+  .style-card.selected .style-check { display: flex; }
+
+  /* Swatches */
+  .s1 { background: linear-gradient(135deg, #E8E0D4 0%, #C4B8A8 50%, #8C7B6A 100%); }
+  .s2 { background: linear-gradient(135deg, #F0EDE8 0%, #D4C4A8 40%, #A89070 100%); }
+  .s3 { background: linear-gradient(135deg, #E4EAE0 0%, #B8C8B0 50%, #7A9070 100%); }
+  .s4 { background: linear-gradient(135deg, #EAE4DC 0%, #C8B89C 50%, #907060 100%); }
+  .s5 { background: linear-gradient(135deg, #1C1C1C 0%, #3C3C3C 50%, #686868 100%); }
+
+  /* ── HOW IT WORKS ── */
+  .how-section {
+    background: var(--charcoal); color: var(--cream);
+    padding: 5rem 4rem; position: relative; overflow: hidden;
+  }
+  .how-section::before {
+    content: '';
+    position: absolute; top: -50%; right: -20%;
+    width: 60vw; height: 60vw;
+    background: radial-gradient(circle, rgba(201,169,110,0.12) 0%, transparent 65%);
+    border-radius: 50%; pointer-events: none;
+  }
+  .how-section .section-label { color: var(--gold); }
+  .how-section .section-title { color: var(--cream); }
+  .steps-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 2rem; margin-top: 3.5rem;
+  }
+  .step-card {
+    position: relative;
+  }
+  .step-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 4rem; font-weight: 900;
+    color: rgba(201,169,110,0.2);
+    line-height: 1; margin-bottom: 1rem;
+  }
+  .step-icon {
+    width: 48px; height: 48px; border-radius: 12px;
+    background: rgba(201,169,110,0.15);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.3rem; margin-bottom: 1rem;
+  }
+  .step-card h4 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem; margin-bottom: 0.5rem;
+  }
+  .step-card p { font-size: 0.85rem; opacity: 0.6; line-height: 1.6; }
+  .step-arrow {
+    position: absolute; right: -1rem; top: 50%;
+    transform: translateY(-50%);
+    color: var(--gold); opacity: 0.4; font-size: 1.5rem;
+  }
+  .steps-grid .step-card:last-child .step-arrow { display: none; }
+
+  /* ── FEATURES ── */
+  .features-section { padding: 5rem 4rem; }
+  .features-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem; margin-top: 3.5rem;
+  }
+  .feature-card {
+    background: var(--warm-white); border-radius: 20px;
+    padding: 2rem; position: relative; overflow: hidden;
+    transition: transform 0.25s, box-shadow 0.25s;
+    border: 1px solid rgba(139,111,82,0.1);
+  }
+  .feature-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 50px rgba(28,28,28,0.1);
+  }
+  .feature-card.featured {
+    background: var(--terracotta); color: var(--cream);
+    grid-row: span 2;
+  }
+  .feature-icon {
+    width: 50px; height: 50px; border-radius: 14px;
+    background: var(--light-sage);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.4rem; margin-bottom: 1.2rem;
+  }
+  .feature-card.featured .feature-icon {
+    background: rgba(255,255,255,0.2);
+  }
+  .feature-card h4 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.15rem; margin-bottom: 0.6rem;
+  }
+  .feature-card p { font-size: 0.85rem; color: var(--muted); line-height: 1.65; }
+  .feature-card.featured p { color: rgba(255,255,255,0.75); }
+
+  /* Budget bar visual */
+  .budget-bars { margin-top: 1.5rem; }
+  .budget-row { display: flex; align-items: center; gap: 0.8rem; margin-bottom: 0.7rem; }
+  .budget-label { font-size: 0.75rem; width: 70px; opacity: 0.7; }
+  .budget-bar-bg { flex: 1; height: 6px; background: rgba(255,255,255,0.2); border-radius: 3px; }
+  .budget-bar-fill { height: 100%; border-radius: 3px; background: rgba(255,255,255,0.7); }
+
+  /* ── AI DEMO SECTION ── */
+  .ai-demo-section {
+    padding: 5rem 4rem;
+    background: var(--light-sage);
+  }
+  .chat-demo {
+    max-width: 640px; margin: 3rem auto 0;
+    background: white; border-radius: 24px;
+    box-shadow: 0 20px 60px rgba(28,28,28,0.1);
+    overflow: hidden;
+  }
+  .chat-header {
+    background: var(--charcoal); padding: 1rem 1.5rem;
+    display: flex; align-items: center; gap: 0.8rem;
+  }
+  .chat-avatar {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--gold), var(--terracotta));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.9rem;
+  }
+  .chat-header-info { flex: 1; }
+  .chat-header-name { color: var(--cream); font-size: 0.9rem; font-weight: 500; }
+  .chat-header-status { color: var(--sage); font-size: 0.75rem; }
+  .chat-body { padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem; }
+  .chat-msg {
+    display: flex; gap: 0.8rem; align-items: flex-start;
+  }
+  .chat-msg.user { flex-direction: row-reverse; }
+  .msg-avatar {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: var(--light-sage);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.8rem; flex-shrink: 0;
+  }
+  .msg-avatar.ai {
+    background: linear-gradient(135deg, var(--gold), var(--terracotta));
+    color: white;
+  }
+  .msg-bubble {
+    max-width: 75%; padding: 0.8rem 1.1rem;
+    border-radius: 16px; font-size: 0.875rem; line-height: 1.55;
+  }
+  .chat-msg:not(.user) .msg-bubble {
+    background: var(--warm-white); border-bottom-left-radius: 4px;
+  }
+  .chat-msg.user .msg-bubble {
+    background: var(--charcoal); color: var(--cream);
+    border-bottom-right-radius: 4px;
+  }
+  .suggestion-chips {
+    display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.5rem;
+  }
+  .chip {
+    background: var(--light-sage); color: var(--sage);
+    padding: 0.35rem 0.8rem; border-radius: 20px;
+    font-size: 0.75rem; cursor: pointer;
+    transition: background 0.2s; border: none;
+  }
+  .chip:hover { background: var(--sage); color: white; }
+  .chat-input-area {
+    padding: 1rem 1.5rem; border-top: 1px solid rgba(0,0,0,0.07);
+    display: flex; gap: 0.8rem; align-items: center;
+  }
+  .chat-input {
+    flex: 1; border: 1.5px solid rgba(139,111,82,0.2);
+    border-radius: 30px; padding: 0.6rem 1.1rem;
+    font-family: 'DM Sans', sans-serif; font-size: 0.88rem;
+    outline: none; background: var(--cream);
+  }
+  .chat-input:focus { border-color: var(--gold); }
+  .chat-send {
+    width: 38px; height: 38px; border-radius: 50%;
+    background: var(--charcoal); color: white;
+    border: none; cursor: pointer; font-size: 1rem;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.2s;
+  }
+  .chat-send:hover { background: var(--terracotta); }
+
+  /* ── PRICING ── */
+  .pricing-section { padding: 5rem 4rem; }
+  .pricing-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem; margin-top: 3.5rem; max-width: 900px; margin-left: auto; margin-right: auto;
+  }
+  .price-card {
+    border-radius: 24px; padding: 2.2rem 2rem;
+    border: 2px solid rgba(139,111,82,0.15);
+    background: var(--warm-white); position: relative;
+    transition: transform 0.25s, box-shadow 0.25s;
+  }
+  .price-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 50px rgba(28,28,28,0.1);
+  }
+  .price-card.popular {
+    background: var(--charcoal); color: var(--cream);
+    border-color: var(--charcoal);
+  }
+  .popular-badge {
+    position: absolute; top: -14px; left: 50%; transform: translateX(-50%);
+    background: var(--gold); color: var(--charcoal);
+    padding: 0.3rem 1rem; border-radius: 20px;
+    font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;
+    white-space: nowrap;
+  }
+  .plan-name { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; opacity: 0.6; margin-bottom: 0.5rem; }
+  .plan-price {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.8rem; font-weight: 700; margin: 0.5rem 0;
+  }
+  .plan-price span { font-size: 1rem; font-weight: 400; opacity: 0.6; }
+  .plan-desc { font-size: 0.85rem; opacity: 0.6; margin-bottom: 1.5rem; line-height: 1.5; }
+  .plan-features { list-style: none; margin-bottom: 2rem; }
+  .plan-features li {
+    font-size: 0.875rem; padding: 0.45rem 0;
+    display: flex; align-items: center; gap: 0.6rem;
+    border-bottom: 1px solid rgba(139,111,82,0.1);
+  }
+  .price-card.popular .plan-features li { border-color: rgba(255,255,255,0.1); }
+  .plan-features li::before { content: '✓'; color: var(--sage); font-weight: 600; }
+  .price-card.popular .plan-features li::before { color: var(--gold); }
+  .plan-btn {
+    width: 100%; padding: 0.85rem;
+    border-radius: 40px; border: none; cursor: pointer;
+    font-family: 'DM Sans', sans-serif; font-size: 0.9rem;
+    font-weight: 500; transition: all 0.25s;
+  }
+  .plan-btn-light {
+    background: transparent; border: 2px solid rgba(139,111,82,0.25);
+    color: var(--charcoal);
+  }
+  .plan-btn-light:hover { border-color: var(--charcoal); }
+  .plan-btn-dark {
+    background: var(--gold); color: var(--charcoal); font-weight: 600;
+  }
+  .plan-btn-dark:hover { background: var(--terracotta); color: white; }
+
+  /* ── TECH STACK ── */
+  .tech-section {
+    padding: 5rem 4rem;
+    background: var(--charcoal); color: var(--cream);
+  }
+  .tech-section .section-label { color: var(--gold); }
+  .tech-section .section-title { color: var(--cream); }
+  .tech-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem; margin-top: 3rem;
+  }
+  .tech-cat h4 {
+    font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px;
+    color: var(--gold); margin-bottom: 1rem; font-weight: 500;
+  }
+  .tech-items { display: flex; flex-direction: column; gap: 0.6rem; }
+  .tech-item {
+    background: rgba(255,255,255,0.06); border-radius: 10px;
+    padding: 0.6rem 1rem; font-size: 0.85rem;
+    display: flex; align-items: center; gap: 0.5rem;
+    border: 1px solid rgba(255,255,255,0.05);
+  }
+  .tech-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--sage); flex-shrink: 0; }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--charcoal); color: var(--cream);
+    padding: 3rem 4rem; border-top: 1px solid rgba(255,255,255,0.06);
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .footer-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.3rem; font-weight: 700;
+  }
+  .footer-logo span { color: var(--terracotta); }
+  .footer-tagline { font-size: 0.8rem; opacity: 0.4; margin-top: 0.3rem; }
+  .footer-right { font-size: 0.8rem; opacity: 0.4; }
+
+  /* ── ANIMATIONS ── */
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+  .hero-visual { animation: float 6s ease-in-out infinite; }
+
+  /* Fade-in on scroll */
+  .fade-up {
+    opacity: 0; transform: translateY(30px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  .fade-up.visible { opacity: 1; transform: translateY(0); }
+
+  /* Responsive */
+  @media (max-width: 900px) {
+    nav { padding: 1rem 2rem; }
+    .hero { grid-template-columns: 1fr; padding: 6rem 2rem 3rem; }
+    .hero-visual { height: 300px; }
+    .section, .how-section, .features-section, .ai-demo-section, .pricing-section, .tech-section { padding: 3.5rem 2rem; }
+    .steps-grid, .features-grid, .tech-grid { grid-template-columns: 1fr 1fr; }
+    .pricing-grid { grid-template-columns: 1fr; }
+    .demo-wrapper { grid-template-columns: 1fr; }
+    footer { flex-direction: column; gap: 1rem; text-align: center; }
+    .nav-links { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">Pixel<span>&</span>Plan</div>
+  <div class="nav-links">
+    <a href="#how">How It Works</a>
+    <a href="#features">Features</a>
+    <a href="#demo">Demo</a>
+    <a href="#pricing">Pricing</a>
+    <a href="#try" class="nav-cta">Try Free →</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-content">
+    <div class="hero-label">AI-Powered Interior Design</div>
+    <h1>Design your space<br>with <em>intelligent</em><br>precision.</h1>
+    <p>Upload a photo of your room, pick your style, set your budget — and let our AI create a personalized interior design in seconds.</p>
+    <div class="hero-btns">
+      <a href="#try" class="btn-primary">Start Designing ✦</a>
+      <a href="#demo" class="btn-secondary">See it in action →</a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat-item">
+        <span class="stat-num">5+</span>
+        <span class="stat-label">Design Styles</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-num">AI</span>
+        <span class="stat-label">Layout Optimizer</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-num">3D</span>
+        <span class="stat-label">Visualization</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-visual">
+    <!-- Main room visualization card -->
+    <div class="room-card room-card-main">
+      <svg class="room-illustration" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+        <!-- Floor -->
+        <rect x="30" y="220" width="340" height="60" rx="4" fill="rgba(255,255,255,0.15)"/>
+        <!-- Wall -->
+        <rect x="30" y="40" width="340" height="185" rx="4" fill="rgba(255,255,255,0.08)"/>
+        <!-- Window -->
+        <rect x="150" y="60" width="100" height="70" rx="4" fill="rgba(255,255,255,0.3)"/>
+        <line x1="200" y1="60" x2="200" y2="130" stroke="rgba(255,255,255,0.5)" stroke-width="2"/>
+        <line x1="150" y1="95" x2="250" y2="95" stroke="rgba(255,255,255,0.5)" stroke-width="2"/>
+        <!-- Sofa -->
+        <rect x="80" y="180" width="160" height="45" rx="10" fill="rgba(255,255,255,0.25)"/>
+        <rect x="80" y="175" width="160" height="20" rx="8" fill="rgba(255,255,255,0.35)"/>
+        <rect x="80" y="175" width="18" height="55" rx="6" fill="rgba(255,255,255,0.35)"/>
+        <rect x="222" y="175" width="18" height="55" rx="6" fill="rgba(255,255,255,0.35)"/>
+        <!-- Cushions -->
+        <rect x="100" y="180" width="45" height="30" rx="6" fill="rgba(201,169,110,0.5)"/>
+        <rect x="155" y="180" width="45" height="30" rx="6" fill="rgba(196,117,74,0.5)"/>
+        <!-- Table -->
+        <rect x="155" y="165" width="60" height="20" rx="6" fill="rgba(255,255,255,0.2)"/>
+        <rect x="163" y="155" width="45" height="12" rx="4" fill="rgba(255,255,255,0.3)"/>
+        <!-- Plant -->
+        <rect x="290" y="185" width="20" height="40" rx="4" fill="rgba(255,255,255,0.2)"/>
+        <ellipse cx="300" cy="180" rx="22" ry="28" fill="rgba(122,140,114,0.6)"/>
+        <ellipse cx="288" cy="170" rx="15" ry="20" fill="rgba(122,140,114,0.7)"/>
+        <ellipse cx="312" cy="168" rx="14" ry="18" fill="rgba(122,140,114,0.65)"/>
+        <!-- Lamp -->
+        <rect x="56" y="155" width="8" height="70" rx="4" fill="rgba(255,255,255,0.3)"/>
+        <ellipse cx="60" cy="150" rx="22" ry="12" fill="rgba(201,169,110,0.6)"/>
+        <!-- Light glow -->
+        <ellipse cx="60" cy="155" rx="40" ry="25" fill="rgba(201,169,110,0.15)"/>
+        <!-- Art on wall -->
+        <rect x="310" y="65" width="45" height="55" rx="4" fill="rgba(255,255,255,0.2)"/>
+        <rect x="315" y="70" width="35" height="45" rx="3" fill="rgba(196,117,74,0.35)"/>
+        <!-- Room label -->
+        <text x="200" y="275" text-anchor="middle" fill="rgba(255,255,255,0.4)" font-size="11" font-family="DM Sans">AI-Generated Living Room</text>
+      </svg>
+    </div>
+
+    <!-- Floating tags -->
+    <div class="float-tag float-tag-style">
+      <div class="tag-dot gold"></div>
+      <span>Scandinavian Style</span>
+    </div>
+    <div class="float-tag float-tag-budget">
+      <div class="tag-dot sage"></div>
+      <span>Budget: $2,400</span>
+    </div>
+    <div class="float-tag float-tag-ai">
+      <div class="tag-dot terra"></div>
+      <span>✓ Layout Optimized</span>
+    </div>
+
+    <!-- Mini style card -->
+    <div class="mini-card">
+      <div class="mini-card-title">Selected Style</div>
+      <div class="mini-card-styles">
+        <span class="style-pill active">Scandi</span>
+        <span class="style-pill">Modern</span>
+        <span class="style-pill">Minimal</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how-section" id="how">
+  <div class="section-label">Process</div>
+  <div class="section-title">Four steps to your<br>dream interior.</div>
+  <div class="steps-grid">
+    <div class="step-card fade-up">
+      <div class="step-num">01</div>
+      <div class="step-icon">📸</div>
+      <h4>Upload Your Room</h4>
+      <p>Share a photo or floor plan. Our AI analyzes space, lighting, and existing elements.</p>
+      <div class="step-arrow">→</div>
+    </div>
+    <div class="step-card fade-up" style="transition-delay:0.1s">
+      <div class="step-num">02</div>
+      <div class="step-icon">🎨</div>
+      <h4>Choose Your Style</h4>
+      <p>Select from Modern, Minimalist, Scandinavian, Bohemian, or Industrial aesthetics.</p>
+      <div class="step-arrow">→</div>
+    </div>
+    <div class="step-card fade-up" style="transition-delay:0.2s">
+      <div class="step-num">03</div>
+      <div class="step-icon">⚙️</div>
+      <h4>Set Constraints</h4>
+      <p>Define your budget, lifestyle needs (kids, pets), and functional priorities.</p>
+      <div class="step-arrow">→</div>
+    </div>
+    <div class="step-card fade-up" style="transition-delay:0.3s">
+      <div class="step-num">04</div>
+      <div class="step-icon">✨</div>
+      <h4>Get Your Design</h4>
+      <p>Receive AI-generated layouts, color palettes, furniture picks, and a 3D preview.</p>
+    </div>
+  </div>
+</section>
+
+<!-- UPLOAD / STYLE DEMO -->
+<section class="section" id="try">
+  <div class="section-label">Try It Now</div>
+  <div class="section-title">Design your room<br>in minutes.</div>
+  <p class="section-sub">Upload a photo of your space and select a design style to get started. It's completely free.</p>
+
+  <div class="demo-wrapper">
+    <div>
+      <div>
+  <input type="file" id="imageInput" accept="image/*" 
+         style="margin-bottom:1rem;">
+
+  <button class="btn-primary"
+          style="cursor:pointer;border:none;font-family:'DM Sans',sans-serif"
+          onclick="generateDesign()">
+    Generate My Design ✦
+  </button>
+
+  <div style="margin-top:2rem;">
+    <div id="loader" style="display:none;color:var(--terracotta);">
+      Generating design...
+    </div>
+
+    <img id="resultImage" 
+         style="margin-top:1rem;max-width:100%;border-radius:16px;">
+  </div>
+</div>
+        <div class="upload-icon">📷</div>
+        <h3>Upload Room Photo</h3>
+        <p>Drag & drop or click to upload your room photo or floor plan.</p>
+        <div class="upload-formats">
+          <span class="fmt-tag">JPG</span>
+          <span class="fmt-tag">PNG</span>
+          <span class="fmt-tag">PDF</span>
+          <span class="fmt-tag">Floor Plan</span>
+        </div>
+      </div>
+
+      <div style="margin-top:1.5rem; background:var(--warm-white); border-radius:16px; padding:1.5rem; border:1px solid rgba(139,111,82,0.12);">
+        <h4 style="font-size:0.9rem;margin-bottom:1rem;font-family:'Playfair Display',serif">Set Your Budget</h4>
+        <input type="range" min="500" max="20000" value="5000" id="budgetSlider" style="width:100%;accent-color:var(--terracotta);" oninput="document.getElementById('budgetVal').textContent='$'+Number(this.value).toLocaleString()">
+        <div style="display:flex;justify-content:space-between;margin-top:0.5rem;font-size:0.8rem;color:var(--muted);">
+          <span>$500</span>
+          <span id="budgetVal" style="color:var(--terracotta);font-weight:500">$5,000</span>
+          <span>$20,000+</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="style-selector">
+      <h3>Choose Your Design Style</h3>
+      <div class="styles-grid">
+        <div class="style-card selected" onclick="selectStyle(this)" style="background:#F5F0E8">
+          <div class="style-card-swatch s1"></div>
+          <h4>Scandinavian</h4>
+          <p>Clean lines, neutral tones, natural materials</p>
+          <div class="style-check">✓</div>
+        </div>
+        <div class="style-card" onclick="selectStyle(this)" style="background:#FAF8F4">
+          <div class="style-card-swatch s2"></div>
+          <h4>Modern Luxury</h4>
+          <p>Bold accents, premium finishes, sophistication</p>
+          <div class="style-check">✓</div>
+        </div>
+        <div class="style-card" onclick="selectStyle(this)" style="background:#F0F4EE">
+          <div class="style-card-swatch s3"></div>
+          <h4>Biophilic</h4>
+          <p>Nature-inspired, plants, organic shapes</p>
+          <div class="style-check">✓</div>
+        </div>
+        <div class="style-card" onclick="selectStyle(this)" style="background:#F4EEE8">
+          <div class="style-card-swatch s4"></div>
+          <h4>Bohemian</h4>
+          <p>Warm textures, layered fabrics, eclectic mix</p>
+          <div class="style-check">✓</div>
+        </div>
+        <div class="style-card" onclick="selectStyle(this)" style="background:#2C2C2C;grid-column:span 2">
+          <div class="style-card-swatch s5" style="height:50px"></div>
+          <h4 style="color:#F5F0E8">Industrial Dark</h4>
+          <p style="color:rgba(245,240,232,0.5)">Raw materials, metal accents, moody atmosphere</p>
+          <div class="style-check">✓</div>
+        </div>
+      </div>
+      <button class="btn-primary" style="margin-top:1.5rem;cursor:pointer;border:none;font-family:'DM Sans',sans-serif">Generate My Design ✦</button>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="features-section" id="features">
+  <div class="section-label">Capabilities</div>
+  <div class="section-title">Everything your interior<br>designer does — and more.</div>
+  <div class="features-grid">
+    <div class="feature-card featured fade-up">
+      <div class="feature-icon">🧠</div>
+      <h4>Constraint-Aware AI</h4>
+      <p>Our AI considers your budget, room dimensions, lifestyle (kids, pets), and lighting conditions — not just aesthetics.</p>
+      <div class="budget-bars">
+        <div class="budget-row">
+          <span class="budget-label">Furniture</span>
+          <div class="budget-bar-bg"><div class="budget-bar-fill" style="width:65%"></div></div>
+        </div>
+        <div class="budget-row">
+          <span class="budget-label">Lighting</span>
+          <div class="budget-bar-bg"><div class="budget-bar-fill" style="width:40%"></div></div>
+        </div>
+        <div class="budget-row">
+          <span class="budget-label">Décor</span>
+          <div class="budget-bar-bg"><div class="budget-bar-fill" style="width:25%"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="feature-card fade-up">
+      <div class="feature-icon">🔍</div>
+      <h4>Computer Vision Analysis</h4>
+      <p>Upload any photo — our vision model segments your room, detects existing furniture, and maps spatial dimensions automatically.</p>
+    </div>
+
+    <div class="feature-card fade-up">
+      <div class="feature-icon">📐</div>
+      <h4>Real-Time Layout Optimizer</h4>
+      <p>AI avoids furniture overlap, maintains walking paths (ADA-compliant), and optimizes natural light flow for every layout suggestion.</p>
+    </div>
+
+    <div class="feature-card fade-up">
+      <div class="feature-icon">🛋️</div>
+      <h4>Furniture Recommendations</h4>
+      <p>Get curated picks with direct shopping links from IKEA, Wayfair, and other retailers — filtered by your budget.</p>
+    </div>
+
+    <div class="feature-card fade-up">
+      <div class="feature-icon">🌿</div>
+      <h4>Eco-Conscious Suggestions</h4>
+      <p>Recommends energy-efficient lighting and sustainable materials, helping reduce environmental impact without compromising style.</p>
+    </div>
+
+    <div class="feature-card fade-up">
+      <div class="feature-icon">🎯</div>
+      <h4>2D Layout + 3D Preview</h4>
+      <p>Visualize your redesigned room with an interactive 2D floor plan and AI-generated 3D image — before spending a single rupee.</p>
+    </div>
+  </div>
+</section>
+
+<!-- AI CHAT DEMO -->
+<section class="ai-demo-section" id="demo">
+  <div style="text-align:center">
+    <div class="section-label">Interactive Assistant</div>
+    <div class="section-title">Chat with your<br>personal designer.</div>
+    <p class="section-sub" style="margin:0 auto 0">Describe what you want, and the AI will guide you through the entire design process conversationally.</p>
+  </div>
+
+  <div class="chat-demo">
+    <div class="chat-header">
+      <div class="chat-avatar">✦</div>
+      <div class="chat-header-info">
+        <div class="chat-header-name">Pixel&Plan AI Designer</div>
+        <div class="chat-header-status">● Online — ready to design</div>
+      </div>
+    </div>
+    <div class="chat-body">
+      <div class="chat-msg">
+        <div class="msg-avatar ai">✦</div>
+        <div>
+          <div class="msg-bubble">Hi! I'm your AI interior designer. Tell me about the room you want to redesign — what's it used for, and what style appeals to you?</div>
+          <div class="suggestion-chips">
+            <button class="chip">Living Room</button>
+            <button class="chip">Bedroom</button>
+            <button class="chip">Home Office</button>
+            <button class="chip">Dining Room</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="chat-msg user">
+        <div class="msg-avatar">👤</div>
+        <div class="msg-bubble">My living room is 14×18 ft. I want a Scandinavian look, budget around $3,000. I have a dog.</div>
+      </div>
+
+      <div class="chat-msg">
+        <div class="msg-avatar ai">✦</div>
+        <div>
+          <div class="msg-bubble">Great! For a 14×18 ft Scandinavian living room with a $3,000 budget and a dog, I'd recommend: durable performance fabrics, a low-profile oak sofa, and washable area rugs. I'll avoid sharp corners and keep furniture away from the walls for easy cleaning. Ready to generate your layout?</div>
+          <div class="suggestion-chips">
+            <button class="chip">Yes, generate layout!</button>
+            <button class="chip">Show color palettes</button>
+            <button class="chip">See furniture picks</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="chat-input-area">
+      <input type="text" class="chat-input" placeholder="Describe your room or ask a question...">
+      <button class="chat-send">→</button>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="pricing-section" id="pricing">
+  <div style="text-align:center">
+    <div class="section-label">Pricing</div>
+    <div class="section-title">Start free, scale when<br>you're ready.</div>
+  </div>
+  <div class="pricing-grid">
+    <div class="price-card fade-up">
+      <div class="plan-name">Free</div>
+      <div class="plan-price">$0</div>
+      <div class="plan-desc">Perfect for exploring your design options.</div>
+      <ul class="plan-features">
+        <li>1 room design per month</li>
+        <li>3 preset style options</li>
+        <li>2D layout visualization</li>
+        <li>Basic furniture suggestions</li>
+        <li>AI chat (10 messages)</li>
+      </ul>
+      <button class="plan-btn plan-btn-light">Get Started Free</button>
+    </div>
+
+    <div class="price-card popular fade-up" style="transition-delay:0.1s">
+      <div class="popular-badge">Most Popular</div>
+      <div class="plan-name">Pro</div>
+      <div class="plan-price">$19 <span>/ month</span></div>
+      <div class="plan-desc">For homeowners serious about their space.</div>
+      <ul class="plan-features">
+        <li>Unlimited room designs</li>
+        <li>All 5 design styles</li>
+        <li>3D AI visualization</li>
+        <li>Budget-aware recommendations</li>
+        <li>Direct shopping links</li>
+        <li>Unlimited AI chat</li>
+        <li>AR preview (coming soon)</li>
+      </ul>
+      <button class="plan-btn plan-btn-dark">Start Pro Trial →</button>
+    </div>
+
+    <div class="price-card fade-up" style="transition-delay:0.2s">
+      <div class="plan-name">Business</div>
+      <div class="plan-price">$79 <span>/ month</span></div>
+      <div class="plan-desc">For designers, agencies, and developers.</div>
+      <ul class="plan-features">
+        <li>Everything in Pro</li>
+        <li>API access</li>
+        <li>White-label option</li>
+        <li>Retailer catalog integration</li>
+        <li>Priority support</li>
+        <li>Custom style training</li>
+      </ul>
+      <button class="plan-btn plan-btn-light">Contact Sales</button>
+    </div>
+  </div>
+</section>
+
+<!-- TECH STACK -->
+<section class="tech-section">
+  <div class="section-label">Architecture</div>
+  <div class="section-title">Built on cutting-edge<br>technology.</div>
+  <div class="tech-grid">
+    <div class="tech-cat fade-up">
+      <h4>AI & ML</h4>
+      <div class="tech-items">
+        <div class="tech-item"><div class="tech-dot"></div>Python + PyTorch</div>
+        <div class="tech-item"><div class="tech-dot"></div>OpenAI API (LLM)</div>
+        <div class="tech-item"><div class="tech-dot"></div>Stable Diffusion</div>
+        <div class="tech-item"><div class="tech-dot"></div>Computer Vision</div>
+      </div>
+    </div>
+    <div class="tech-cat fade-up" style="transition-delay:0.1s">
+      <h4>Backend</h4>
+      <div class="tech-items">
+        <div class="tech-item"><div class="tech-dot"></div>FastAPI</div>
+        <div class="tech-item"><div class="tech-dot"></div>PostgreSQL</div>
+        <div class="tech-item"><div class="tech-dot"></div>Firebase Realtime</div>
+        <div class="tech-item"><div class="tech-dot"></div>Docker + CI/CD</div>
+      </div>
+    </div>
+    <div class="tech-cat fade-up" style="transition-delay:0.2s">
+      <h4>Frontend</h4>
+      <div class="tech-items">
+        <div class="tech-item"><div class="tech-dot"></div>React / Next.js</div>
+        <div class="tech-item"><div class="tech-dot"></div>Three.js (3D)</div>
+        <div class="tech-item"><div class="tech-dot"></div>Tailwind CSS</div>
+        <div class="tech-item"><div class="tech-dot"></div>WebAR / ARCore</div>
+      </div>
+    </div>
+    <div class="tech-cat fade-up" style="transition-delay:0.3s">
+      <h4>Infrastructure</h4>
+      <div class="tech-items">
+        <div class="tech-item"><div class="tech-dot"></div>AWS / GCP</div>
+        <div class="tech-item"><div class="tech-dot"></div>GitHub Actions</div>
+        <div class="tech-item"><div class="tech-dot"></div>Blender Pipeline</div>
+        <div class="tech-item"><div class="tech-dot"></div>Redis Cache</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div>
+    <div class="footer-logo">Pixel<span>&</span>Plan</div>
+    <div class="footer-tagline">Intelligent Interior Design, Powered by AI</div>
+  </div>
+  <div class="footer-right">© 2025 Pixel&Plan · Built for Hackathon</div>
+</footer>
+
+<script>
+  // Style card selection
+  function selectStyle(card) {
+    document.querySelectorAll('.style-card').forEach(c => c.classList.remove('selected'));
+    card.classList.add('selected');
+  }
+
+  // Intersection observer for fade-up
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+
+  // Chat input enter key
+  document.querySelector('.chat-input').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' && this.value.trim()) {
+      this.value = '';
+    }
+  });
+
+  // Suggestion chip click
+  document.querySelectorAll('.chip').forEach(chip => {
+    chip.addEventListener('click', function() {
+      const input = document.querySelector('.chat-input');
+      input.value = this.textContent;
+      input.focus();
+    });
+  });
+async function generateDesign() {
+
+  const fileInput = document.getElementById("imageInput");
+  const loader = document.getElementById("loader");
+  const resultImg = document.getElementById("resultImage");
+
+  if (!fileInput.files[0]) {
+    alert("Please upload an image.");
+    return;
+  }
+
+  loader.style.display = "block";
+
+  const formData = new FormData();
+  formData.append("file", fileInput.files[0]);
+
+  try {
+    const response = await fetch(
+      `http://127.0.0.1:8000/upload?style=${selectedStyle}`,
+      {
+        method: "POST",
+        body: formData
+      }
+    );
+
+    const data = await response.json();
+
+    loader.style.display = "none";
+
+    if (data.image_url) {
+      resultImg.src = data.image_url;
+    } else {
+      alert("Something went wrong!");
+    }
+
+  } catch (error) {
+    loader.style.display = "none";
+    alert("Server error. Make sure backend is running.");
+    console.error(error);
+  }
+}
+</script>
+</body>
+</html>
